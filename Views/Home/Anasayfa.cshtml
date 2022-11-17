@@ -1,0 +1,311 @@
+﻿@model List<KUSYS_Demo.Models.Student>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Anasayfa</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <style>
+
+
+    table {
+  width: 800px;
+  border-collapse: collapse;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+td {
+  padding: 15px;
+  background-color: rgba(255,255,255,0.2);
+  color: black;
+}
+
+th {
+  text-align: left;
+  padding: 15px;
+  background-color: #ff656c;
+  color: #fff;
+}
+
+thead {
+  
+    background-color: #ff656c;
+  
+}
+.inputNewStu{
+    width:90%
+}
+
+    </style>
+</head>
+<body>
+    @if(ViewBag.Role == 1)
+    {
+        <button type="button" class="btn btn-success" onclick="openNewStudentModal()" data-bs-toggle="modal" data-bs-target="#newStudentModal">New Student
+</button>
+    }
+    
+    <h3>Student List</h3>
+    <table>
+        <thead>
+            <tr>
+            <td>StudentId</td>
+            <td>Name</td>
+            <td>Surname</td>
+            <td></td> 
+            <td></td>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td data-bs-toggle="modal" data-bs-target="#DetailModalOpen" onclick="DetayGoster(this)">@item.StudentId</td>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                     @if(ViewBag.Role == 1)
+                {
+                    <td>
+                        <button type="button" class="btn btn-primary" style="background-color:darkblue;color:white" data-bs-toggle="modal" data-bs-target="#updateModalOpen" onclick="updateModal(this)">Update</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-warning" style="background-color:darkred;color:white" data-bs-toggle="modal" data-bs-target="#deleteModalOpen" onclick="deleteModal(this)">Delete</button>
+                    </td>
+                }
+                </tr>
+            }
+        </tbody>
+        
+    </table>
+
+    <hr />
+
+    <h3>Student - Course Matches</h3>
+    <table>
+        <thead>
+            <tr>
+                <td>StudentId</td>
+                <td>Courses</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.StudentId</td>
+                    <td>@item.CourseId</td>
+                </tr>
+                
+            }
+        </tbody>
+    </table>
+
+
+   <div class="modal fade" id="newStudentModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Student</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+          <form id="NewStudentInfo">
+              <input type="text" class="inputNewStu" id="NewStuFirstName" placeholder="First Name" /><br /><br />
+              <input type="text" class="inputNewStu" id="NewStuLastName" placeholder="Last Name" /><br /><br />
+              <input type="text" class="inputNewStu" id="NewStuBirthDate" placeholder="Birth Date (ex: 15.06.1998)" /><br /><br />
+              <input type="text" class="inputNewStu" id="NewStuCourses" placeholder="Courses (ex: CSI101-PHY101)" /><br /><br />
+              <button type="button" onclick="AddStudent()" class="btn btn-primary">Add Student</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <p id = "StudentAdded" style="color:red"></p>
+          </form>
+
+      </div>
+      <div class="modal-footer">
+    </div>
+    </div>
+  </div>
+</div>
+
+          <div class="modal fade" id="updateModalOpen" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Student</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+          <form id="UpdateStudentInfo">
+              <input type="text" class="inputNewStu" id="UpdateStuFirstName" placeholder="First Name" /><br /><br />
+              <input type="text" class="inputNewStu" id="UpdateStuLastName" placeholder="Last Name" /><br /><br />
+              <input type="text" class="inputNewStu" id="UpdateStuBirthDate" placeholder="Birth Date (ex: 15.06.1998)" /><br /><br />
+              <input type="text" class="inputNewStu" id="UpdateStuCourses" placeholder="Courses (ex: CSI101-PHY101)" /><br /><br />
+              <button type="button" onclick="UpdateStudent()" class="btn btn-primary">Update Student</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <p id = "StudentUpdated" style="color:red"></p>
+          </form>
+
+      </div>
+      <div class="modal-footer">
+        
+       
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+          <div class="modal fade" id="deleteModalOpen" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Student</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+          Öğrenci sistemden silinecektir. Emin misiniz?
+              <button type="button" onclick="DeleteStudent()" class="btn btn-primary">Evet</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <p id = "StudentDeleted" style="color:red"></p>
+          </form>
+
+      </div>
+      <div class="modal-footer">
+        
+       
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          <div class="modal fade" id="DetailModalOpen" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Student Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+              <label>StudentId: </label><p id="stuDetailId"></p>
+              <label>First Name: </label><p id="stuDetailFirstName"></p>
+              <label>Last Name: </label><p id="stuDetailLastName"></p>
+              <label>Birth Date: </label><p id="stuDetailBirthDate"></p>
+              <label>Courses: </label><p id="stuDetailCourses"></p>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <p id = "StudentDeleted" style="color:red"></p>
+          </form>
+
+      </div>
+      <div class="modal-footer">
+        
+       
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+<script  type="text/javascript">
+ function openNewStudentModal(){
+     $("#newStudentModal").modal();
+ }
+ var stuid = "";
+
+    function updateModal(e){
+        debugger
+     $("#updateModalOpen").modal();
+     stuid = $(e).closest("tr").find('td:eq(0)').text();
+
+ 
+
+ }
+ function deleteModal(e){
+        debugger
+     $("#deleteModalOpen").modal();
+     stuid = $(e).closest("tr").find('td:eq(0)').text();
+ }
+  function DetayGoster(e){
+        debugger
+     $("#DetailModalOpen").modal();
+     stuid = $(e).closest("tr").find('td:eq(0)').text();
+     $.ajax({
+                url: '/Home/StudentDetails',
+                type: 'POST',
+                data: {StudentId :stuid},
+                success: function(e){
+                    debugger
+                    document.getElementById("stuDetailId").innerHTML = e.status.studentId;
+                    document.getElementById("stuDetailFirstName").innerHTML = e.status.firstName;
+                    document.getElementById("stuDetailLastName").innerHTML = e.status.lastName;
+                    document.getElementById("stuDetailBirthDate").innerHTML = e.status.birthDate;
+                    document.getElementById("stuDetailCourses").innerHTML = e.status.courseId;
+                }
+        });
+ }
+ 
+ function UpdateStudent(){
+            var FirstName = document.getElementById("UpdateStuFirstName").value;
+            var LastName = document.getElementById("UpdateStuLastName").value;
+            var BirthDate = document.getElementById("UpdateStuBirthDate").value;
+            var Courses = document.getElementById("UpdateStuCourses").value;
+            
+            debugger
+            $.ajax({
+                url: '/Home/UpdateStudent',
+                type: 'POST',
+                data: {FirstName:FirstName, LastName:LastName, BirthDate:BirthDate,Courses:Courses, StudentId :stuid},
+                success: function(e){
+                    document.getElementById("StudentUpdated").innerHTML = e.status;
+                }
+        });
+ }
+
+  function DeleteStudent(){
+            
+            debugger
+            $.ajax({
+                url: '/Home/DeleteStudent',
+                type: 'POST',
+                data: {StudentId :stuid},
+                success: function(e){
+                    document.getElementById("StudentDeleted").innerHTML = e.status;
+                }
+        });
+ }
+
+  function AddStudent(){
+
+       
+            debugger
+            var FirstName = document.getElementById("NewStuFirstName").value;
+            var LastName = document.getElementById("NewStuLastName").value;
+            var BirthDate = document.getElementById("NewStuBirthDate").value;
+            var Courses = document.getElementById("NewStuCourses").value;
+
+            $.ajax({
+                url: '/Home/AddStudent',
+                type: 'POST',
+                data: {FirstName:FirstName, LastName:LastName, BirthDate:BirthDate,Courses:Courses},
+                success: function(e){
+                    document.getElementById("StudentAdded").innerHTML = e.status;
+                }
+        });
+  
+  }
+  </script>
+</html>
